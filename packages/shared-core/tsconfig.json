@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "lib": ["dom", "dom.iterable", "esnext"],
+      "module": "ESNext",
+      "target": "es5",
+      "forceConsistentCasingInFileNames": true,
+      "outDir": "./dist",
+      "rootDir": "./"
+    },
+    "exclude": ["dist", "build", "node_modules"],
+    "extends": "tsconfig/base.json",
+    "include": ["index.ts"]
+  }

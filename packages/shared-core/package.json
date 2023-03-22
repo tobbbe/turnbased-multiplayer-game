@@ -1,0 +1,26 @@
+
+{
+    "name": "shared-core",
+    "version": "0.0.0",
+    "private": true,
+    "main": "./index.ts",
+    "types": "./index.ts",
+    "scripts": {
+      "build-not-needed": "tsup index.ts --format esm,cjs --dts",
+      "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+      "dev-not-needed": "tsup index.ts --format esm,cjs --dts --watch",
+      "lint": "TIMING=1 eslint \"**/*.ts*\"",
+      "test": "jest"
+    },
+    "dependencies": {
+      "jose": "4.11.2"
+    },
+    "devDependencies": {
+      "@types/node": "18.11.17",
+      "eslint": "7.32.0",
+      "eslint-config-custom": "workspace:*",
+      "tsconfig": "workspace:*",
+      "typescript": "4.9.4",
+      "tsup": "6.1.3"
+    }
+  }
