@@ -13,7 +13,6 @@
       "test": "jest"
     },
     "dependencies": {
-      "jose": "4.11.2"
     },
     "devDependencies": {
       "@types/node": "18.11.17",

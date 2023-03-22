@@ -6,7 +6,7 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
-    "xshapesapp-web#build": {
+    "web#build": {
       "env": [
         "NODE_ENV",
         "NEXT_PUBLIC_VERCEL_ENV",
