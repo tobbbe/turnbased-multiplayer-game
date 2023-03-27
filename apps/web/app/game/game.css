@@ -1,0 +1,8 @@
+html, body { margin: 0; padding: 0; }
+#world-container { min-height: 100vh; display: flex; justify-content: center; align-items: center;}
+#world-map {display: flex; max-width: fit-content; flex-direction: column; }
+.lat {display: flex; border-bottom: 1px solid #ddd; max-width: fit-content;}
+.lat > div { width: 40px; height: 40px; border-right: 1px solid #ddd; font-size: 10px; display: flex; justify-content: center; align-items: center; }
+.g {background: #6db700;}
+.w {background: #c4c4ff;}
+.c {background: #ffe7c4;}
