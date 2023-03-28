@@ -7,7 +7,7 @@ kv_namespaces = [
 vars = { ENVIRONMENT = "dev" }
 
 [dev]
-port = 6662
+port = 6661
 
 [env.production]
 name = "tmg"

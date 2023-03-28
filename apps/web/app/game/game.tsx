@@ -1,17 +1,19 @@
 'use client'
 import React from 'react'
 import './game.css'
-import { Updater, useImmer } from 'use-immer'
+import { useImmer } from 'use-immer'
+import { WorldData, Coordinate, GameState, TileConfig } from '../../types'
 
-const GameContext = React.createContext<Game>({} as Game)
+const GameContext = React.createContext<GameState>({} as GameState)
 
-export const Game = ({ worldData }: { worldData: WorldData }) => {
-  const [game, setGame] = useImmer<Game>({} as Game)
+export const Game: React.FC<{
+  worldData: WorldData
+}> = ({ worldData }) => {
+  const [game, setGame] = useImmer<GameState>({} as GameState)
 
   React.useEffect(() => {
     setGame({
       world: worldData,
-      config: { centerTile: calcCenter(worldData) },
       ui: { showCoords: false },
       update: setGame,
     })
@@ -26,7 +28,7 @@ export const Game = ({ worldData }: { worldData: WorldData }) => {
   )
 }
 
-const GameInner = () => {
+const GameInner: React.FC = () => {
   const { world } = useGame()
 
   return (
@@ -47,7 +49,7 @@ const GameInner = () => {
   )
 }
 
-function Tile({ coordinate }: { coordinate: Coordinate }) {
+function Tile({ coordinate }: { coordinate: Coordinate }): JSX.Element {
   const game = useGame()
   const tile = tileConfig(coordinate, game)
 
@@ -58,66 +60,26 @@ function Tile({ coordinate }: { coordinate: Coordinate }) {
   )
 }
 
-type WorldData = {
-  map: {
-    tiles: Array<Array<TileType>>
-    locations: {
-      name: string
-      type: number
-    }[]
-    types: {
-      name: string
-      label: string
-      id: string
-      movement: number
-    }[]
-  }
-}
-type Game = {
-  world: WorldData
-  config: {
-    centerTile: Coordinate
-  }
-  ui: {
-    showCoords: boolean
-  }
-  update: Updater<Game>
-}
-type TileType = number | 'c'
-type Coordinate = { x: number; y: number }
-
-function tileConfig(absolutePos: Coordinate, game: Game) {
+function tileConfig(absolutePos: Coordinate, game: GameState): TileConfig {
   const tile = game.world.map.tiles[absolutePos.y][absolutePos.x]
 
   return {
-    relativeX: absolutePos.x - game.config.centerTile.x,
-    relativeY: game.config.centerTile.y - absolutePos.y,
+    relativeX: absolutePos.x - game.world.map.centerTile.x,
+    relativeY: game.world.map.centerTile.y - absolutePos.y,
     absoluteX: absolutePos.x,
     absoluteY: absolutePos.y,
     className: tile === 'c' ? 'c' : game.world.map.types[game.world.map.locations[tile].type].id,
   }
 }
 
-function useGame() {
+function useGame(): GameState {
   const game = React.useContext(GameContext)
 
   if (!game) throw new Error('World is null')
   return game
 }
 
-function calcCenter(world: WorldData): Coordinate {
-  for (let latIndex = 0; latIndex < world.map.tiles.length; latIndex++) {
-    const latitude = world.map.tiles[latIndex]
-    for (let tileIndex = 0; tileIndex < latitude.length; tileIndex++) {
-      if (latitude[tileIndex] === 'c') {
-        return { x: tileIndex, y: latIndex }
-      }
-    }
-  }
-  throw new Error('Cant find center')
-}
-
-function Settings() {
+function Settings(): JSX.Element {
   const game = useGame()
 
   return (

@@ -17,6 +17,12 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/no-var-requires': 0,
     '@next/next/no-html-link-for-pages': 'off',
+    '@typescript-eslint/explicit-function-return-type': [
+      'error',
+      {
+        allowExpressions: true,
+      },
+    ],
   },
   settings: {
     react: {
