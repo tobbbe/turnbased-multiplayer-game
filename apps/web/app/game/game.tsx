@@ -128,7 +128,7 @@ function Settings() {
       <button
         onClick={() =>
           game.update((draft) => {
-            draft.ui.showCoords = !draft?.ui.showCoords
+            draft.ui.showCoords = !draft.ui.showCoords
           })
         }>
         Toggle coords
