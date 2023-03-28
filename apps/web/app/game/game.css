@@ -1,8 +1,62 @@
-html, body { margin: 0; padding: 0; }
-#world-container { min-height: 100vh; display: flex; justify-content: center; align-items: center;}
-#world-map {display: flex; max-width: fit-content; flex-direction: column; }
-.lat {display: flex; border-bottom: 1px solid #ddd; max-width: fit-content;}
-.lat > div { width: 40px; height: 40px; border-right: 1px solid #ddd; font-size: 10px; display: flex; justify-content: center; align-items: center; }
-.g {background: #6db700;}
-.w {background: #c4c4ff;}
-.c {background: #ffe7c4;}
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: rebeccapurple;
+}
+#world-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#world-map {
+  display: flex;
+  max-width: fit-content;
+  flex-direction: column;
+  cursor: pointer;
+  border: 4px solid rgb(233, 150, 18);
+  border-radius: 4px;
+}
+.lat {display: flex;
+  max-width: fit-content;
+  background: rgb(48, 48, 48);
+}
+.lat > div {
+  width: 40px;
+  height: 40px;
+  border-left: 1px solid #00620f;
+  border-right: 1px solid #00e122;
+  border-top: 1px solid #00620f;
+  border-bottom: 1px solid #00c71e;
+  font-size: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+}
+.lat > div:hover {
+  opacity: .8;
+  background: #9b6e41;
+  border-color: rgb(206, 25, 25);
+}
+.lat > div:active {
+  opacity: .7;
+  cursor: grabbing;
+}
+.g, .c {background: #009A17;}
+.w {background: #0e87cc;}
+
+#settings {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: 20px;
+  font-size: 10px;
+  background: black;
+}
+#settings.hidden > * {
+  display: none;
+}
+#settings button {
+  font-size: 10px;
+}

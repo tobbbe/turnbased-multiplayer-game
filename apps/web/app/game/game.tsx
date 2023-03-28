@@ -1,19 +1,33 @@
 'use client'
 import React from 'react'
 import './game.css'
+import { Updater, useImmer } from 'use-immer'
 
-const WorldContext = React.createContext<World | null>(null)
+const GameContext = React.createContext<Game>({} as Game)
 
 export const Game = ({ worldData }: { worldData: WorldData }) => {
+  const [game, setGame] = useImmer<Game>({} as Game)
+
+  React.useEffect(() => {
+    setGame({
+      world: worldData,
+      config: { centerTile: calcCenter(worldData) },
+      ui: { showCoords: false },
+      update: setGame,
+    })
+  }, [setGame, worldData])
+
+  if (!game?.world) return null
+
   return (
-    <WorldContext.Provider value={{ ...worldData, config: { centerTile: calcCenter(worldData) } }}>
+    <GameContext.Provider value={game}>
       <GameInner />
-    </WorldContext.Provider>
+    </GameContext.Provider>
   )
 }
 
 const GameInner = () => {
-  const world = useWorld()
+  const { world } = useGame()
 
   return (
     <div id="world-container">
@@ -28,14 +42,20 @@ const GameInner = () => {
           )
         })}
       </div>
+      <Settings />
     </div>
   )
 }
 
 function Tile({ coordinate }: { coordinate: Coordinate }) {
-  const world = useWorld()
-  const tile = tileConfig(coordinate, world)
-  return <div className={tile.className}>{`${tile.relativeX},${tile.relativeY}`}</div>
+  const game = useGame()
+  const tile = tileConfig(coordinate, game)
+
+  return (
+    <div className={tile.className}>
+      {game.ui.showCoords ? `${tile.relativeX},${tile.relativeY}` : ''}
+    </div>
+  )
 }
 
 type WorldData = {
@@ -53,33 +73,38 @@ type WorldData = {
     }[]
   }
 }
-
-type World = {
+type Game = {
+  world: WorldData
   config: {
     centerTile: Coordinate
   }
-} & WorldData
-
+  ui: {
+    showCoords: boolean
+  }
+  update: Updater<Game>
+}
 type TileType = number | 'c'
 type Coordinate = { x: number; y: number }
 
-function tileConfig(absolutePos: Coordinate, world: World) {
-  const tile = world.map.tiles[absolutePos.y][absolutePos.x]
+function tileConfig(absolutePos: Coordinate, game: Game) {
+  const tile = game.world.map.tiles[absolutePos.y][absolutePos.x]
 
   return {
-    relativeX: absolutePos.x - world.config.centerTile.x,
-    relativeY: world.config.centerTile.y - absolutePos.y,
+    relativeX: absolutePos.x - game.config.centerTile.x,
+    relativeY: game.config.centerTile.y - absolutePos.y,
     absoluteX: absolutePos.x,
     absoluteY: absolutePos.y,
-    className: tile === 'c' ? 'c' : world.map.types[world.map.locations[tile].type].id,
+    className: tile === 'c' ? 'c' : game.world.map.types[game.world.map.locations[tile].type].id,
   }
 }
 
-function useWorld() {
-  const world = React.useContext(WorldContext)
-  if (!world) throw new Error('World is null')
-  return world
+function useGame() {
+  const game = React.useContext(GameContext)
+
+  if (!game) throw new Error('World is null')
+  return game
 }
+
 function calcCenter(world: WorldData): Coordinate {
   for (let latIndex = 0; latIndex < world.map.tiles.length; latIndex++) {
     const latitude = world.map.tiles[latIndex]
@@ -90,4 +115,24 @@ function calcCenter(world: WorldData): Coordinate {
     }
   }
   throw new Error('Cant find center')
+}
+
+function Settings() {
+  const game = useGame()
+
+  return (
+    <div
+      id="settings"
+      className={'hidden'}
+      onClick={(e) => e.currentTarget.classList.toggle('hidden')}>
+      <button
+        onClick={() =>
+          game.update((draft) => {
+            draft.ui.showCoords = !draft?.ui.showCoords
+          })
+        }>
+        Toggle coords
+      </button>
+    </div>
+  )
 }

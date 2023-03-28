@@ -10,19 +10,21 @@
     "lint": "eslint . --ext .tsx,.ts,.js,.jsx && tsc --noEmit"
   },
   "dependencies": {
+    "immer": "9.0.21",
     "next": "^13.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "shared-core": "workspace:*",
     "ui": "workspace:*",
-    "shared-core": "workspace:*"
+    "use-immer": "0.8.1"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
-    "eslint-config-custom": "workspace:*",
-    "tsconfig": "workspace:*",
     "@types/node": "^17.0.12",
     "@types/react": "^18.0.22",
     "@types/react-dom": "^18.0.7",
+    "eslint-config-custom": "workspace:*",
+    "tsconfig": "workspace:*",
     "typescript": "5.0.2"
   }
 }
