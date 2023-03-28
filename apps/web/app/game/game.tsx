@@ -1,85 +1,93 @@
 'use client'
-import React, { useState, useEffect } from 'react'
-import './App.css'
+import React from 'react'
+import './game.css'
 
-type Player = {
-  id: number
-  name: string
-  position: { x: number; y: number }
-  color: 'red' | 'blue'
+const WorldContext = React.createContext<World | null>(null)
+
+export const Game = ({ worldData }: { worldData: WorldData }) => {
+  return (
+    <WorldContext.Provider value={{ ...worldData, config: { centerTile: calcCenter(worldData) } }}>
+      <GameInner />
+    </WorldContext.Provider>
+  )
 }
-type Grid = number[][]
-const initialPlayers: Player[] = [
-  { id: 1, name: 'Player 1', position: { x: 0, y: 0 }, color: 'red' },
-  { id: 2, name: 'Player 2', position: { x: 9, y: 9 }, color: 'blue' },
-]
 
-export const Game = () => {
-  const [gridData, setGridData] = useState<Grid>([])
-  const [players, setPlayers] = useState<Player[]>(initialPlayers)
+const GameInner = () => {
+  const world = useWorld()
 
-  useEffect(() => {
-    const grid = Array.from({ length: 10 }, () => Array.from({ length: 10 }, () => 0))
-    setGridData(grid)
-  }, [])
+  return (
+    <div id="world-container">
+      <div id="world-map">
+        {world.map.tiles.map((latitude, latIndex) => {
+          return (
+            <div className="lat" key={latIndex}>
+              {latitude.map((tileType, tileIndex) => {
+                return <Tile coordinate={{ x: tileIndex, y: latIndex }} key={tileIndex} />
+              })}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
 
-  // Send move or attack to the server
-  const sendAction = async () => {
-    try {
-      // const response = await axios.post('/api/game/action', {
-      //   playerId,
-      //   action,
-      //   newPosition,
-      // });
-      // // Update local state based on server response
-      // setPlayers(response.data.players);
-    } catch (error) {
-      console.error('Error sending action:', error)
+function Tile({ coordinate }: { coordinate: Coordinate }) {
+  const world = useWorld()
+  const tile = tileConfig(coordinate, world)
+  return <div className={tile.className}>{`${tile.relativeX},${tile.relativeY}`}</div>
+}
+
+type WorldData = {
+  map: {
+    tiles: Array<Array<TileType>>
+    locations: {
+      name: string
+      type: number
+    }[]
+    types: {
+      name: string
+      label: string
+      id: string
+      movement: number
+    }[]
+  }
+}
+
+type World = {
+  config: {
+    centerTile: Coordinate
+  }
+} & WorldData
+
+type TileType = number | 'c'
+type Coordinate = { x: number; y: number }
+
+function tileConfig(absolutePos: Coordinate, world: World) {
+  const tile = world.map.tiles[absolutePos.y][absolutePos.x]
+
+  return {
+    relativeX: absolutePos.x - world.config.centerTile.x,
+    relativeY: world.config.centerTile.y - absolutePos.y,
+    absoluteX: absolutePos.x,
+    absoluteY: absolutePos.y,
+    className: tile === 'c' ? 'c' : world.map.types[world.map.locations[tile].type].id,
+  }
+}
+
+function useWorld() {
+  const world = React.useContext(WorldContext)
+  if (!world) throw new Error('World is null')
+  return world
+}
+function calcCenter(world: WorldData): Coordinate {
+  for (let latIndex = 0; latIndex < world.map.tiles.length; latIndex++) {
+    const latitude = world.map.tiles[latIndex]
+    for (let tileIndex = 0; tileIndex < latitude.length; tileIndex++) {
+      if (latitude[tileIndex] === 'c') {
+        return { x: tileIndex, y: latIndex }
+      }
     }
   }
-
-  useEffect(() => {
-    setTimeout(() => {
-      //   sendAction(1, 'move', { x: 3, y: 0 });
-      setPlayers([
-        { id: 1, name: 'Player 1', position: { x: 3, y: 0 }, color: 'red' },
-        { id: 2, name: 'Player 2', position: { x: 9, y: 9 }, color: 'blue' },
-      ])
-    }, 2000)
-  }, [])
-
-  return (
-    <div className="App">
-      <Grid gridData={gridData} players={players} />
-    </div>
-  )
-}
-
-const Grid = ({ gridData, players }: { gridData: Grid; players: Player[] }) => {
-  return (
-    <div className="grid">
-      {gridData.map((row, y) => (
-        <div key={y} className="row">
-          {row.map((cell, x) => (
-            <div key={x} className="cell">
-              <div className="cell-pos">
-                {y},{x}
-              </div>
-              {players
-                .filter((player) => player.position.x === x && player.position.y === y)
-                .map((player, index) => (
-                  <PlayerTile key={index} player={player} />
-                ))}
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
-  )
-}
-
-const PlayerTile = ({ player }: { player: Player }) => {
-  return (
-    <div className="player" style={{ backgroundColor: player.color }} title={player.name}></div>
-  )
+  throw new Error('Cant find center')
 }

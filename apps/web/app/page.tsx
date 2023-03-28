@@ -1,4 +1,4 @@
-import { Game } from './game/game2'
+import { Game } from './game/game'
 import fs from 'fs'
 
 export default function Web() {
