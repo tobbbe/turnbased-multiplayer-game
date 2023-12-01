@@ -15,6 +15,7 @@ export const Game: React.FC<{
   worldData: WorldData
 }> = ({ worldData }) => {
   const [r, setReflectClient] = React.useState<ReflectClient | null>(null)
+  const [isOnline, setIsOnline] = React.useState(false)
   const [gameState, setGame] = useImmer<GameState>({
     world: worldData,
     ui: { showCoords: false },
@@ -22,12 +23,19 @@ export const Game: React.FC<{
   })
 
   React.useEffect(() => {
+    const userID = window.location.href.split('?')[1] || 'no-user-id'
+    console.log({ userID })
+
     const _reflect = new Reflect({
       roomID: 'room',
-      userID: window.location.href.split('?')[1] || 'no-user-id',
+      userID,
       mutators,
       server: 'http://localhost:8080',
       enableAnalytics: false,
+      // logLevel: 'debug',
+      onOnlineChange(online) {
+        setIsOnline(online)
+      },
     })
     setReflectClient(_reflect)
 
@@ -36,9 +44,16 @@ export const Game: React.FC<{
     }
   }, [])
 
+  if (!r?.userID) return null
+  if (r?.userID === 'no-user-id')
+    return <div style={{ fontSize: '32px', color: 'white', padding: '20px' }}>no user id</div>
+  if (!isOnline) {
+    return <div style={{ color: 'white', fontSize: '32px', padding: '20px' }}>connecting...</div>
+  }
+
   return (
     <GameContext.Provider value={{ gs: gameState, gsUpdate: setGame }}>
-      {r && r.userID !== 'no-user-id' && <GameInner reflect={r} />}
+      {r && <GameInner reflect={r} />}
     </GameContext.Provider>
   )
 }
@@ -46,7 +61,7 @@ export const Game: React.FC<{
 const GameInner: React.FC<{ reflect: ReflectClient }> = ({ reflect: r }) => {
   const { gs, gsUpdate } = useGame()
   const presentClientIDs = usePresence(r)
-  const allPlayers = useSubscribe(r, (tx) => tx.get<Player[]>('players'), [])
+  const allPlayers = useSubscribe(r, (tx) => tx.get<Player[]>('players'), null, [])
 
   const presentPlayers = useSubscribe(
     r,
@@ -87,24 +102,20 @@ const GameInner: React.FC<{ reflect: ReflectClient }> = ({ reflect: r }) => {
     })
   }, [allPlayers, gsUpdate])
 
-  if (!r?.userID) return null
-  if (r?.userID === 'no-user-id')
-    return <div style={{ fontSize: '32px', color: 'white', padding: '20px' }}>no user id</div>
-  if (!r?.online) {
-    return <div style={{ color: 'white', fontSize: '32px', padding: '20px' }}>connecting...</div>
-  }
-  // console.log({
-  //   userID: r?.userID,
-  //   roomID: r?.roomID,
-  //   online: r?.online,
-  //   closed: r?.closed,
-  // })
-
   return (
     <>
       <div style={{ position: 'fixed', bottom: 0, zIndex: 999, color: 'white', padding: '10px' }}>
-        <pre style={{ fontSize: 9 }}>currentPlayer: {JSON.stringify(currentPlayer, null, 2)}</pre>
-        <pre style={{ fontSize: 9 }}>allPlayers: {JSON.stringify(allPlayers, null, 2)}</pre>
+        <pre style={{ fontSize: 9 }}>
+          {JSON.stringify(
+            {
+              online: r.online,
+              currentPlayer,
+              restOfPlayers: allPlayers?.filter((x) => x.id !== r.userID),
+            },
+            null,
+            2
+          )}
+        </pre>
       </div>
       <div id="world-container">
         <div id="world-map">
@@ -112,7 +123,13 @@ const GameInner: React.FC<{ reflect: ReflectClient }> = ({ reflect: r }) => {
             return (
               <div className="lat" key={latIndex}>
                 {latitude.map((tileType, tileIndex) => {
-                  return <Tile coordinate={{ x: tileIndex, y: latIndex }} key={tileIndex} />
+                  return (
+                    <Tile
+                      coordinate={{ x: tileIndex, y: latIndex }}
+                      key={tileIndex}
+                      players={allPlayers as Player[]}
+                    />
+                  )
                 })}
               </div>
             )
@@ -124,14 +141,20 @@ const GameInner: React.FC<{ reflect: ReflectClient }> = ({ reflect: r }) => {
   )
 }
 
-function Tile({ coordinate }: { coordinate: Coordinate }): JSX.Element {
+function Tile({
+  coordinate,
+  players,
+}: {
+  coordinate: Coordinate
+  players: Player[] | null
+}): JSX.Element {
   const { gs } = useGame()
   const tile = tileConfig(coordinate, gs)
 
   return (
     <div className={tile.className + ' relative'}>
-      {gs.players
-        .filter((x) => x.location.x === tile.relativeX && x.location.y === tile.relativeY)
+      {players
+        ?.filter((x) => x.location.x === tile.relativeX && x.location.y === tile.relativeY)
         .map((x) => (
           <div key={x.name} className="player">
             🐈‍⬛
@@ -184,7 +207,7 @@ function useControllers(player: Player | null, r: ReflectClient): null {
 
   React.useEffect(() => {
     function onKey(e: KeyboardEvent): void {
-      if (!player) return
+      if (!player || !r.online) return
       if (lastMove === null || (lastMove && new Date().getTime() - lastMove.getTime() < 100)) return
 
       setLastMove(null) // block
@@ -215,7 +238,7 @@ function useControllers(player: Player | null, r: ReflectClient): null {
 
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [lastMove, player, r.mutate])
+  }, [lastMove, player, r.mutate, r.online])
 
   return null
 }
