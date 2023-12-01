@@ -51,7 +51,8 @@ export const Game: React.FC<{
 
   const r = reflectInstance.current
 
-  if (!r?.userID) return null
+  if (!r?.userID)
+    return <p style={{ fontSize: '32px', color: 'white', padding: '20px' }}>Waiting for reflect</p>
   if (r?.userID === 'no-user-id')
     return <div style={{ fontSize: '32px', color: 'white', padding: '20px' }}>no user id</div>
   if (!isOnline) {
