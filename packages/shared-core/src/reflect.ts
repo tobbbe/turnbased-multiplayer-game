@@ -1,11 +1,12 @@
 import type { WriteTransaction } from '@rocicorp/reflect'
 
 async function setup(tx: WriteTransaction, delta: { name: string; id: string }) {
+  console.log('setup')
   const players = (await tx.get<Player[]>('players')) ?? []
   const player = players.find((x) => x.id === delta.id)
   await tx.set('players', [
     ...players.filter((x) => x.id !== player?.id),
-    { location: { x: 1, y: 0 }, ...player, ...delta },
+    { location: { x: 0, y: 0 }, ...player, ...delta },
   ])
 }
 

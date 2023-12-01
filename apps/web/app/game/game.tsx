@@ -24,7 +24,6 @@ export const Game: React.FC<{
 
   React.useEffect(() => {
     const userID = window.location.href.split('?')[1] || 'no-user-id'
-    console.log({ userID })
 
     if (reflectInstance.current) return
 
@@ -161,13 +160,14 @@ function Tile({
 
   return (
     <div className={tile.className + ' relative'}>
-      {players
-        ?.filter((x) => x.location.x === tile.relativeX && x.location.y === tile.relativeY)
-        .map((x) => (
-          <div key={x.name} className="player">
-            🐈‍⬛
-          </div>
-        ))}
+      {tile.className !== 'c' &&
+        players
+          ?.filter((x) => x.location.x === tile.relativeX && x.location.y === tile.relativeY)
+          .map((x) => (
+            <div key={x.name} className="player">
+              🐈‍⬛
+            </div>
+          ))}
       {gs.ui.showCoords ? `${tile.relativeX},${tile.relativeY}` : ''}
     </div>
   )
