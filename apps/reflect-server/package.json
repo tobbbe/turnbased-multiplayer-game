@@ -1,0 +1,14 @@
+{
+	"name": "reflect-server",
+	"private": true,
+	"version": "0.0.0",
+	"scripts": {
+		"dev": "reflect dev"
+	},
+	"dependencies": {
+		"shared-core": "workspace:*",
+        "@rocicorp/reflect": "0.38.202311200859"
+	},
+	"devDependencies": {
+	}
+}

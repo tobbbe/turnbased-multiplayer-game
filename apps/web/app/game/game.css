@@ -11,6 +11,7 @@ html, body {
 }
 #world-map {
   display: flex;
+  transform: scale(.7);
   max-width: fit-content;
   flex-direction: column;
   cursor: pointer;
@@ -59,4 +60,8 @@ html, body {
 }
 #settings button {
   font-size: 10px;
+}
+
+.player {
+ font-size: 22px;
 }

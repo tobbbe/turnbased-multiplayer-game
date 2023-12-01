@@ -21,7 +21,7 @@ export type GameState = {
   ui: {
     showCoords: boolean
   }
-  update: Updater<GameState>
+  players: Player[]
 }
 export type TileType = number | 'c'
 export type Coordinate = { x: number; y: number }
@@ -31,4 +31,11 @@ export type TileConfig = {
   absoluteX: number
   absoluteY: number
   className: string
+}
+
+export type Player = {
+  id: string
+  name: string
+  location: Coordinate
+  movement: number
 }

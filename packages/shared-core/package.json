@@ -13,6 +13,9 @@
       "test": "jest"
     },
     "dependencies": {
+      "@rocicorp/reflect": "0.38.202311200859",
+      "zod": "3.22.4",
+      "@rocicorp/rails": "0.8.0"
     },
     "devDependencies": {
       "@types/node": "18.11.17",
