@@ -14,7 +14,7 @@ type ReflectClient = Reflect<typeof mutators>
 export const Game: React.FC<{
   worldData: WorldData
 }> = ({ worldData }) => {
-  const [r, setReflectClient] = React.useState<ReflectClient | null>(null)
+  const reflectInstance = React.useRef<ReflectClient | null>(null)
   const [isOnline, setIsOnline] = React.useState(false)
   const [gameState, setGame] = useImmer<GameState>({
     world: worldData,
@@ -26,6 +26,9 @@ export const Game: React.FC<{
     const userID = window.location.href.split('?')[1] || 'no-user-id'
     console.log({ userID })
 
+    if (reflectInstance.current) return
+
+    console.log('Setting up reflect')
     const _reflect = new Reflect({
       roomID: 'room',
       userID,
@@ -34,15 +37,20 @@ export const Game: React.FC<{
       enableAnalytics: false,
       // logLevel: 'debug',
       onOnlineChange(online) {
+        console.log('Reflect online:', online)
         setIsOnline(online)
       },
     })
-    setReflectClient(_reflect)
+    reflectInstance.current = _reflect
 
     return () => {
       _reflect.close()
+      reflectInstance.current = null
+      console.log('Reflect closed')
     }
   }, [])
+
+  const r = reflectInstance.current
 
   if (!r?.userID) return null
   if (r?.userID === 'no-user-id')
