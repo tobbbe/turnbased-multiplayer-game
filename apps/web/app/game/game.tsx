@@ -54,9 +54,13 @@ export const Game: React.FC<{
   if (!r?.userID)
     return <p style={{ fontSize: '32px', color: 'white', padding: '20px' }}>Waiting for reflect</p>
   if (r?.userID === 'no-user-id')
-    return <div style={{ fontSize: '32px', color: 'white', padding: '20px' }}>no user id</div>
+    return (
+      <div style={{ fontSize: '32px', color: 'white', padding: '20px' }}>
+        No user id. Add to url. Ex: localhost:6660?player22
+      </div>
+    )
   if (!isOnline) {
-    return <div style={{ color: 'white', fontSize: '32px', padding: '20px' }}>connecting...</div>
+    return <div style={{ color: 'white', fontSize: '32px', padding: '20px' }}>Connecting...</div>
   }
 
   return (
