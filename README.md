@@ -5,3 +5,6 @@
 
 ## Run
 `pnpm run dev`
+
+## Play
+http://localhost:6660/?player
