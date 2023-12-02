@@ -27,7 +27,7 @@ export const Game: React.FC<{
 
     if (reflectInstance.current) return
 
-    console.log('Setting up reflect')
+    console.log('Reflect: setup')
     const _reflect = new Reflect({
       roomID: 'room',
       userID,
@@ -42,10 +42,12 @@ export const Game: React.FC<{
     })
     reflectInstance.current = _reflect
 
+    console.log('Reflect: setup - done')
+
     return () => {
       _reflect.close()
       reflectInstance.current = null
-      console.log('Reflect closed')
+      console.log('Reflect: closed')
     }
   }, [])
 
