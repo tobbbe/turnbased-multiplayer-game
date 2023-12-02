@@ -1,4 +1,4 @@
-import { mutators } from 'shared-core'
+import { mutators } from 'multiplayer'
 
 export default function makeOptions() {
   return {

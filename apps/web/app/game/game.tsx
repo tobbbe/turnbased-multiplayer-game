@@ -3,7 +3,7 @@ import React from 'react'
 import './game.css'
 import { Updater, useImmer } from 'use-immer'
 import { WorldData, Coordinate, GameState, TileConfig, Player } from '../../types'
-import { mutators } from 'shared-core'
+import { mutators } from 'multiplayer'
 import { Reflect } from '@rocicorp/reflect/client'
 import { useSubscribe, usePresence } from '@rocicorp/reflect/react'
 
@@ -175,14 +175,17 @@ function Tile({
 }
 
 function tileConfig(absolutePos: Coordinate, game: GameState): TileConfig {
-  const tile = game.world.map.tiles[absolutePos.y][absolutePos.x]
+  const tile = game.world.map.tiles[absolutePos.y]?.[absolutePos.x]
+  if (!tile) throw new Error("Tile doesn't exist")
 
   return {
     relativeX: absolutePos.x - game.world.map.centerTile.x,
     relativeY: game.world.map.centerTile.y - absolutePos.y,
     absoluteX: absolutePos.x,
     absoluteY: absolutePos.y,
-    className: tile === 'c' ? 'c' : game.world.map.types[game.world.map.locations[tile].type].id,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    className:
+      tile === 'c' ? 'c' : game.world.map.types[game.world.map.locations[tile]!.type]?.id || 'err',
   }
 }
 

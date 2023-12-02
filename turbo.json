@@ -4,25 +4,14 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
-    },
-    "web#build": {
-      "env": [
-        "NODE_ENV",
-        "NEXT_PUBLIC_VERCEL_ENV",
-        "NEXT_PUBLIC_VERCEL_URL",
-        "NEXT_PUBLIC_BACKEND_ORIGIN",
-        "NEXT_PUBLIC_IMAGES_ORIGIN",
-        "SUPABASE_ADMIN_API_KEY",
-        "JWT_SECRET",
-        "NEXT_PUBLIC_STRIPE_PK"
-      ]
+      "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {
-      "outputs": []
+      "dependsOn": ["^lint"]
     },
     "dev": {
-      "cache": false
+      "cache": false,
+      "persistent": true
     }
   }
 }

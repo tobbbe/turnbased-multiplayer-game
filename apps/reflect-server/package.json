@@ -6,7 +6,7 @@
 		"dev": "reflect dev"
 	},
 	"dependencies": {
-		"shared-core": "workspace:*",
+		"multiplayer": "workspace:*",
         "@rocicorp/reflect": "0.38.202311200859"
 	},
 	"devDependencies": {
