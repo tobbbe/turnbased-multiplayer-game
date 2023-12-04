@@ -30,6 +30,7 @@ export const Game: React.FC<{
     if (reflectInstance.current) return
 
     const server = isDev ? 'http://localhost:8080' : process.env.SERVER_LIVE
+    console.log(server)
 
     console.log('Reflect: setup')
     const _reflect = new Reflect({
