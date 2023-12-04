@@ -7,6 +7,8 @@ import { mutators } from 'multiplayer'
 import { Reflect } from '@rocicorp/reflect/client'
 import { useSubscribe, usePresence } from '@rocicorp/reflect/react'
 
+const isDev = process.env.NODE_ENV === 'development'
+
 type GameContext = { gs: GameState; gsUpdate: Updater<GameState> }
 const GameContext = React.createContext<GameContext>({} as GameContext)
 type ReflectClient = Reflect<typeof mutators>
@@ -27,12 +29,14 @@ export const Game: React.FC<{
 
     if (reflectInstance.current) return
 
+    const server = isDev ? 'http://localhost:8080' : process.env.SERVER_LIVE
+
     console.log('Reflect: setup')
     const _reflect = new Reflect({
       roomID: 'room',
       userID,
       mutators,
-      server: 'http://localhost:8080',
+      server,
       enableAnalytics: false,
       // logLevel: 'debug',
       onOnlineChange(online) {
@@ -40,6 +44,12 @@ export const Game: React.FC<{
         setIsOnline(online)
       },
     })
+
+    _reflect.subscribe(
+      (tx) => tx.scan().entries().toArray(),
+      (val) => console.log('reflect changed', val)
+    )
+
     reflectInstance.current = _reflect
 
     console.log('Reflect: setup - done')
