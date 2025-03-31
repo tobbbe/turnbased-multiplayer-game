@@ -3,12 +3,12 @@
 	"private": true,
 	"version": "0.0.0",
 	"scripts": {
-		"dev": "reflect dev",
+		"dev": "reflect dev --log-level=debug",
 		"publish": "reflect publish"
 	},
 	"dependencies": {
 		"multiplayer": "workspace:*",
-        "@rocicorp/reflect": "^0.38.202311200859"
+        "@rocicorp/reflect": "^0.38.202312062143"
 	},
 	"devDependencies": {
 	}

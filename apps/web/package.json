@@ -10,7 +10,7 @@
     "lint": "eslint . --ext .tsx,.ts,.js,.jsx && tsc --noEmit"
   },
   "dependencies": {
-    "@rocicorp/reflect": "0.38.202312012331",
+    "@rocicorp/reflect": "0.38.202312062143",
     "immer": "9.0.21",
     "lodash": "4.17.21",
     "next": "14.0.3",

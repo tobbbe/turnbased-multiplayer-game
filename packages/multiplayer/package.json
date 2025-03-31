@@ -6,14 +6,12 @@
     "main": "./index.ts",
     "types": "./index.ts",
     "scripts": {
-      "build-not-needed": "tsup index.ts --format esm,cjs --dts",
       "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
-      "dev-not-needed": "tsup index.ts --format esm,cjs --dts --watch",
       "lint": "TIMING=1 eslint \"**/*.ts*\"",
       "test": "jest"
     },
     "dependencies": {
-      "@rocicorp/reflect": "0.38.202311200859",
+      "@rocicorp/reflect": "0.38.202312062143",
       "zod": "3.22.4",
       "@rocicorp/rails": "0.8.0"
     },
